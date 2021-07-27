@@ -1,7 +1,8 @@
 // require express.js
 const express = require('express');
 const { animals } = require('./data/animals.json');
-
+// tells app to use port 3001, not Heroku's 80
+const PORT = process.env.PORT || 3001;
 // instantiates the server 
 const app = express();
 //---------------------------------------------------------------------------------------------------------------------------------------------
@@ -103,7 +104,7 @@ app.get('/api/animals', (req, res) => {
 // *** RUN NPM START AND THEN NAVIGATE TO http://localhost:3001/api/animals?name=Erica on browser to see an object with the property name and value 'Erica'
 
 // chain listen() method on to server 
-app.listen(3001, () => {
-    console.log(`API server now on port 3001!`);
+app.listen(PORT, () => {
+    console.log(`API server now on port ${PORT}!`);
   });
 
