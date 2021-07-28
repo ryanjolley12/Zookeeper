@@ -1,3 +1,7 @@
+// fs library and Node API path --> provides utilities for working with files && directory paths
+const fs = require('fs');
+const path = require('path');
+
 // require express.js
 const express = require('express');
 const { animals } = require('./data/animals.json');
@@ -105,7 +109,53 @@ function findById(id, animalsArray) {
     const result = animalsArray.filter(animal => animal.id === id)[0];
     return result;
   }
+//---------------------------------------------------------------------------------------------------------------------------------------------
+// NEW CREATE ANIMALS FUNCTION: accepts POST route's req.body value and array for the data
+// new animal --> added to imported animals array from animals.json (doesn't actually change the content of the imported file but reades data and makes a copy for server.js)
 
+// function createNewAnimal(body, animalsArray) {
+//     const animal = body;
+//     animalsArray.push(animal);
+
+//     // return finished code to post route for response 
+//     return animal;
+// }
+// function executed within app.post() route's callback; takes new animal data and adds it to animalsArray; writes new array data to animals.json
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+// updated createNewAnimal() to write to animals.json
+
+function createNewAnimal(body, animalsArray) {
+    const animal = body;
+    animalsArray.push(animal);
+    fs.writeFileSync( // doesnt require callback function 
+        path.join(__dirname, './data/animals.json'), // joins value of directory with path to the animals.json file 
+        JSON.stringify({ animals: animalsArray }, null, 2) // saves JS array data as JSON; null: don't edit any existing data; 2: create white space bw values for readability
+    );
+
+    // return finished code to post route for response 
+    return animal;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+// ADD VALIDATION 
+function validateAnimal(animal) {
+    if (!animal.name || typeof animal.name !== 'string') {
+        return false; 
+    }
+
+if (!animal.species || typeof animal.species !== 'string') {
+    return false;
+}
+
+if (!animal.diet || typeof animal.diet !== 'string') {
+    return false; 
+}
+if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+    return false
+}
+return true;
+}
 
 // call the filterByQuery() in the app.get() callback 
 
@@ -136,10 +186,25 @@ app.get('/api/animals/:id', (req, res) => {
 // *** RUN NPM START AND THEN NAVIGATE TO http://localhost:3001/api/animals?name=Erica on browser to see an object with the property name and value 'Erica'
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
+// app.post('/api/animals', (req, res) => {
+//     // req.body is where our incoming content will be 
+//     console.log(req.body);
+//     res.json(req.body);
+// });
+//---------------------------------------------------------------------------------------------------------------------------------------------
+// update POST routes callback to generate new animal IDs: 
 app.post('/api/animals', (req, res) => {
-    // req.body is where our incoming content will be 
-    console.log(req.body);
-    res.json(req.body);
+    // set id based on what the next index of the array will be 
+    req.body.id = animals.length.toString(); // ID created based on Array length--> don't remove any data from animals.json 
+
+    // if any data in req.body is incorrect, send 400 error back 
+    if (!validateAnimal(req.body)) {
+        res.status(400).send('The animal is not properly formatted')
+    } else {
+    // add animal to json file and animals array in this function
+    const animal = createNewAnimal(req.body, animals);
+    res.json(animal);
+    }
 });
 
 // chain listen() method on to server 
