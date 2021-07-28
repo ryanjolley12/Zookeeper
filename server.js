@@ -5,6 +5,16 @@ const { animals } = require('./data/animals.json');
 const PORT = process.env.PORT || 3001;
 // instantiates the server 
 const app = express();
+
+// Parse Incoming Data for server to accept POST request:
+
+// parse incoming string or array data
+app.use(express.urlencoded({ extended: true }));
+
+// parse incoming JSON data
+app.use(express.json());
+
+// both of the app.use middleware functions are needed when server accepts POST data
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
 // add the route for animals ---> get() method always requires two arguments ("string that describes thee route"; callback function), send() method from res (response) parameter to send string "Hello!" to client 
@@ -91,6 +101,12 @@ function filterByQuery(query, animalsArray) {
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
+function findById(id, animalsArray) {
+    const result = animalsArray.filter(animal => animal.id === id)[0];
+    return result;
+  }
+
+
 // call the filterByQuery() in the app.get() callback 
 
 app.get('/api/animals', (req, res) => {
@@ -100,8 +116,31 @@ app.get('/api/animals', (req, res) => {
     }
     res.json(results);
   });
+
+// a param route must come after the other get routee
+app.get('/api/animals/:id', (req, res) => {
+  const result = findById(req.params.id, animals);
+    res.json(result);
+});
+
+// send a 404 if no record exists
+app.get('/api/animals/:id', (req, res) => {
+    const result = findById(req.params.id, animals);
+    if (result) {
+      res.json(result);
+    } else {
+      res.send(404);
+    }
+  });
  
 // *** RUN NPM START AND THEN NAVIGATE TO http://localhost:3001/api/animals?name=Erica on browser to see an object with the property name and value 'Erica'
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+app.post('/api/animals', (req, res) => {
+    // req.body is where our incoming content will be 
+    console.log(req.body);
+    res.json(req.body);
+});
 
 // chain listen() method on to server 
 app.listen(PORT, () => {
