@@ -64,101 +64,102 @@ app.use(express.json());
 // filterByQuery takes in req.query as an arguments and filters thru animals accordingly, returning new filtered array 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
+// MOVED TO ANIMALS.JS in LIB
 // modify filterByQuery() to handle personalityTraits array 
-function filterByQuery(query, animalsArray) {
-    let personalityTraitsArray = [];
-    // Note that we save the animalsArray as filteredResults here:
-    let filteredResults = animalsArray;
-    if (query.personalityTraits) {
-      // Save personalityTraits as a dedicated array.
-      // If personalityTraits is a string, place it into a new array and save.
-      if (typeof query.personalityTraits === 'string') {
-        personalityTraitsArray = [query.personalityTraits];
-      } else {
-        personalityTraitsArray = query.personalityTraits;
-      }
-      // Loop through each trait in the personalityTraits array:
-      personalityTraitsArray.forEach(trait => {
-        // Check the trait against each animal in the filteredResults array.
-        // Remember, it is initially a copy of the animalsArray,
-        // but here we're updating it for each trait in the .forEach() loop.
-        // For each trait being targeted by the filter, the filteredResults
-        // array will then contain only the entries that contain the trait,
-        // so at the end we'll have an array of animals that have every one 
-        // of the traits when the .forEach() loop is finished.
-        filteredResults = filteredResults.filter(
-          animal => animal.personalityTraits.indexOf(trait) !== -1
-        );
-      });
-    }
-    if (query.diet) {
-      filteredResults = filteredResults.filter(animal => animal.diet === query.diet);
-    }
-    if (query.species) {
-      filteredResults = filteredResults.filter(animal => animal.species === query.species);
-    }
-    if (query.name) {
-      filteredResults = filteredResults.filter(animal => animal.name === query.name);
-    }
-    // return the filtered results:
-    return filteredResults;
-  }
+// function filterByQuery(query, animalsArray) {
+//     let personalityTraitsArray = [];
+//     // Note that we save the animalsArray as filteredResults here:
+//     let filteredResults = animalsArray;
+//     if (query.personalityTraits) {
+//       // Save personalityTraits as a dedicated array.
+//       // If personalityTraits is a string, place it into a new array and save.
+//       if (typeof query.personalityTraits === 'string') {
+//         personalityTraitsArray = [query.personalityTraits];
+//       } else {
+//         personalityTraitsArray = query.personalityTraits;
+//       }
+//       // Loop through each trait in the personalityTraits array:
+//       personalityTraitsArray.forEach(trait => {
+//         // Check the trait against each animal in the filteredResults array.
+//         // Remember, it is initially a copy of the animalsArray,
+//         // but here we're updating it for each trait in the .forEach() loop.
+//         // For each trait being targeted by the filter, the filteredResults
+//         // array will then contain only the entries that contain the trait,
+//         // so at the end we'll have an array of animals that have every one 
+//         // of the traits when the .forEach() loop is finished.
+//         filteredResults = filteredResults.filter(
+//           animal => animal.personalityTraits.indexOf(trait) !== -1
+//         );
+//       });
+//     }
+//     if (query.diet) {
+//       filteredResults = filteredResults.filter(animal => animal.diet === query.diet);
+//     }
+//     if (query.species) {
+//       filteredResults = filteredResults.filter(animal => animal.species === query.species);
+//     }
+//     if (query.name) {
+//       filteredResults = filteredResults.filter(animal => animal.name === query.name);
+//     }
+//     // return the filtered results:
+//     return filteredResults;
+//   }
 
-// http://localhost:3001/api/animals?personalityTraits=hungry&personalityTraits=zany see only zany traits 
+// // http://localhost:3001/api/animals?personalityTraits=hungry&personalityTraits=zany see only zany traits 
 
-//---------------------------------------------------------------------------------------------------------------------------------------------
+// //---------------------------------------------------------------------------------------------------------------------------------------------
 
-function findById(id, animalsArray) {
-    const result = animalsArray.filter(animal => animal.id === id)[0];
-    return result;
-  }
-//---------------------------------------------------------------------------------------------------------------------------------------------
-// NEW CREATE ANIMALS FUNCTION: accepts POST route's req.body value and array for the data
-// new animal --> added to imported animals array from animals.json (doesn't actually change the content of the imported file but reades data and makes a copy for server.js)
+// function findById(id, animalsArray) {
+//     const result = animalsArray.filter(animal => animal.id === id)[0];
+//     return result;
+//   }
+// //---------------------------------------------------------------------------------------------------------------------------------------------
+// // NEW CREATE ANIMALS FUNCTION: accepts POST route's req.body value and array for the data
+// // new animal --> added to imported animals array from animals.json (doesn't actually change the content of the imported file but reades data and makes a copy for server.js)
+
+// // function createNewAnimal(body, animalsArray) {
+// //     const animal = body;
+// //     animalsArray.push(animal);
+
+// //     // return finished code to post route for response 
+// //     return animal;
+// // }
+// // function executed within app.post() route's callback; takes new animal data and adds it to animalsArray; writes new array data to animals.json
+// //---------------------------------------------------------------------------------------------------------------------------------------------
+
+// // updated createNewAnimal() to write to animals.json
 
 // function createNewAnimal(body, animalsArray) {
 //     const animal = body;
 //     animalsArray.push(animal);
+//     fs.writeFileSync( // doesnt require callback function 
+//         path.join(__dirname, './data/animals.json'), // joins value of directory with path to the animals.json file 
+//         JSON.stringify({ animals: animalsArray }, null, 2) // saves JS array data as JSON; null: don't edit any existing data; 2: create white space bw values for readability
+//     );
 
 //     // return finished code to post route for response 
 //     return animal;
 // }
-// function executed within app.post() route's callback; takes new animal data and adds it to animalsArray; writes new array data to animals.json
-//---------------------------------------------------------------------------------------------------------------------------------------------
 
-// updated createNewAnimal() to write to animals.json
+// //---------------------------------------------------------------------------------------------------------------------------------------------
+// // ADD VALIDATION 
+// function validateAnimal(animal) {
+//     if (!animal.name || typeof animal.name !== 'string') {
+//         return false; 
+//     }
 
-function createNewAnimal(body, animalsArray) {
-    const animal = body;
-    animalsArray.push(animal);
-    fs.writeFileSync( // doesnt require callback function 
-        path.join(__dirname, './data/animals.json'), // joins value of directory with path to the animals.json file 
-        JSON.stringify({ animals: animalsArray }, null, 2) // saves JS array data as JSON; null: don't edit any existing data; 2: create white space bw values for readability
-    );
+// if (!animal.species || typeof animal.species !== 'string') {
+//     return false;
+// }
 
-    // return finished code to post route for response 
-    return animal;
-}
-
-//---------------------------------------------------------------------------------------------------------------------------------------------
-// ADD VALIDATION 
-function validateAnimal(animal) {
-    if (!animal.name || typeof animal.name !== 'string') {
-        return false; 
-    }
-
-if (!animal.species || typeof animal.species !== 'string') {
-    return false;
-}
-
-if (!animal.diet || typeof animal.diet !== 'string') {
-    return false; 
-}
-if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
-    return false
-}
-return true;
-}
+// if (!animal.diet || typeof animal.diet !== 'string') {
+//     return false; 
+// }
+// if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+//     return false
+// }
+// return true;
+// }
 
 // call the filterByQuery() in the app.get() callback 
 
