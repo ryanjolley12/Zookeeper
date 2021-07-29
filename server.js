@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 3001;
 // instantiates the server 
 const app = express();
 
+// make the whole public file path middleware
+app.use(express.static('public'));
+
 // Parse Incoming Data for server to accept POST request:
 
 // parse incoming string or array data
@@ -207,7 +210,33 @@ app.post('/api/animals', (req, res) => {
     }
 });
 
+// -------------------------------------------------------------------------------------------------------------------------------
+// SERVES ROUTE TO INDEX.HTML
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+// SERVES ROUTE TO ANIMALS.HTML
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+// SERVES ROUTE TO ZOOKEEPERS.HTML
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+// WILDCARD ROUTE => any route that wasn't previously define, should always come last in route order
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+// these routes don't have "API" term bc they're just linking to the page, not the JSON data 
+// -------------------------------------------------------------------------------------------------------------------------------
+
 // chain listen() method on to server 
+// should always be last 
+
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
   });

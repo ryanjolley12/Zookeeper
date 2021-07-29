@@ -126,6 +126,24 @@
         "hungry"
       ],
       "id": "12"
+    },
+    {
+      "name": "animal",
+      "species": "test",
+      "diet": "herbivore",
+      "personalityTraits": [
+        "loving"
+      ],
+      "id": "13"
+    },
+    {
+      "name": "animal",
+      "species": "test",
+      "diet": "herbivore",
+      "personalityTraits": [
+        "zany"
+      ],
+      "id": "14"
     }
   ]
 }
