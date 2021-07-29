@@ -1,3 +1,6 @@
+const apiRoutes = require('./routes/apiRoutes');
+const htmlRoutes = require('./routes/htmlRoutes');
+
 // fs library and Node API path --> provides utilities for working with files && directory paths
 const fs = require('fs');
 const path = require('path');
